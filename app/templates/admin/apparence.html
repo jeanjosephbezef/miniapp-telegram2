@@ -1,0 +1,138 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Apparence{% endblock %}
+
+{% block content %}
+<h1>Apparence de l'appli</h1>
+
+<div class="apparence-grid">
+
+<section class="apparence-section">
+<h2 class="apparence-soustitre">Personnalisation complète</h2>
+<p class="apparence-note">Modifiez les textes, les couleurs et le message envoyé par le bot quand un client tape <strong>/start</strong>.</p>
+
+<form method="POST" class="admin-form">
+<input type="hidden" name="action" value="personnalisation">
+
+<label for="nom_boutique">Nom de la boutique</label>
+<input type="text" id="nom_boutique" name="nom_boutique" maxlength="100" value="{{ parametre.nom_boutique or '' }}" placeholder="Ex : Ma boutique">
+
+<label for="slogan">Slogan</label>
+<input type="text" id="slogan" name="slogan" maxlength="255" value="{{ parametre.slogan or '' }}" placeholder="Ex : Livraison rapide et soignée">
+
+<label for="titre_accueil">Titre de l'accueil</label>
+<input type="text" id="titre_accueil" name="titre_accueil" maxlength="100" value="{{ parametre.titre_accueil or '' }}" placeholder="Ex : Bienvenue">
+
+<label for="titre_categories">Titre de la section catégories</label>
+<input type="text" id="titre_categories" name="titre_categories" maxlength="100" value="{{ parametre.titre_categories or '' }}">
+
+<label for="titre_nouveautes">Titre de la section nouveautés</label>
+<input type="text" id="titre_nouveautes" name="titre_nouveautes" maxlength="100" value="{{ parametre.titre_nouveautes or '' }}">
+
+<label for="texte_bouton">Texte des boutons produit</label>
+<input type="text" id="texte_bouton" name="texte_bouton" maxlength="100" value="{{ parametre.texte_bouton or '' }}">
+
+<label for="couleur_primaire">Couleur principale</label>
+<input type="color" id="couleur_primaire" name="couleur_primaire" value="{{ parametre.couleur_primaire or '#4fc3f7' }}">
+
+<label for="couleur_texte">Couleur du texte</label>
+<input type="color" id="couleur_texte" name="couleur_texte" value="{{ parametre.couleur_texte or '#f0f0f0' }}">
+
+<label for="couleur_fond">Couleur de fond</label>
+<input type="color" id="couleur_fond" name="couleur_fond" value="{{ parametre.couleur_fond or '#0b0f14' }}">
+
+<label for="message_bienvenue">Message Telegram envoyé avec /start</label>
+<textarea id="message_bienvenue" name="message_bienvenue" rows="5" placeholder="Bienvenue !&#10;&#10;Appuyez sur le bouton ci-dessous pour ouvrir la boutique.">{{ parametre.message_bienvenue or '' }}</textarea>
+
+<label for="css_personnalise">CSS avancé (facultatif)</label>
+<textarea id="css_personnalise" name="css_personnalise" rows="6" placeholder="Ex : .card { border-radius: 24px; }">{{ parametre.css_personnalise or '' }}</textarea>
+<p class="apparence-note">Réservé aux modifications avancées. Utilisez uniquement du CSS.</p>
+
+<button type="submit">Enregistrer la personnalisation</button>
+</form>
+</section>
+
+<section class="apparence-section">
+<h2 class="apparence-soustitre">Fond d'écran</h2>
+
+    {% if parametre.fond_ecran %}
+<div class="fond-apercu">
+<img src="{{ url_for('static', filename='images/' + parametre.fond_ecran) }}" alt="Fond d'écran actuel">
+</div>
+    {% else %}
+<p class="apparence-note">Aucun fond personnalisé : l'image par défaut du thème est utilisée.</p>
+    {% endif %}
+
+<form method="POST" enctype="multipart/form-data" class="admin-form">
+<input type="hidden" name="action" value="fond">
+
+<label for="fond_ecran">Nouvelle image de fond</label>
+<input type="file" id="fond_ecran" name="fond_ecran" accept="image/*" required>
+
+<button type="submit">Appliquer ce fond d'écran</button>
+</form>
+
+    {% if parametre.fond_ecran %}
+<form method="POST" class="admin-form apparence-reset-form">
+<input type="hidden" name="action" value="reset_fond">
+<button type="submit" class="btn-secondaire">Revenir au fond par défaut</button>
+</form>
+    {% endif %}
+</section>
+
+<section class="apparence-section">
+<h2 class="apparence-soustitre">Dock catégories</h2>
+<p class="apparence-note">
+      Affiche une barre avec les catégories en bas de l'appli, sur toutes les pages,
+      pour un accès rapide façon application mobile.
+</p>
+
+<form method="POST" class="admin-form">
+<input type="hidden" name="action" value="dock">
+
+<label class="apparence-toggle">
+<input
+type="checkbox"
+name="dock_categories_actif"
+{% if parametre.dock_categories_actif %}checked{% endif %}
+>
+        Afficher le dock des catégories dans l'appli
+</label>
+
+<button type="submit">Enregistrer</button>
+</form>
+
+    {% if not categories_dock %}
+<p class="apparence-note">
+      Aucune catégorie créée pour le moment — le dock restera vide tant qu'aucune
+<a href="{{ url_for('main.nouvelle_categorie') }}">catégorie</a> n'existe.
+</p>
+    {% endif %}
+</section>
+
+<section class="apparence-section">
+<h2 class="apparence-soustitre">Annonce</h2>
+<p class="apparence-note">
+      Affiche un bandeau d'annonce en haut de l'accueil de l'appli.
+      Laisse le champ vide pour ne rien afficher.
+</p>
+
+<form method="POST" class="admin-form">
+<input type="hidden" name="action" value="annonce">
+
+<label for="annonce_texte">Texte de l'annonce</label>
+<input
+type="text"
+id="annonce_texte"
+name="annonce_texte"
+maxlength="255"
+value="{{ parametre.annonce_texte or '' }}"
+placeholder="Ex : Maintenance prévue le 20 août">
+
+<button type="submit">Enregistrer</button>
+</form>
+</section>
+
+</div>
+
+{% endblock %}
